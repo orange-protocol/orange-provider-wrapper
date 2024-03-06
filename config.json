@@ -1,0 +1,19 @@
+{
+    "orange_did":"",
+    "wallet_file":"",
+    "wallet_pwd":"",
+    "chain_rpc":"",
+    "contract_address":"",
+    "api_configs":[
+        {
+            "server_path":"/getlist",
+            "has_api_key":true,
+            "api_key_location":"header",
+            "api_key_name":"Authorization",
+            "api_key":"test",
+            "api_url":"http://localhost:8080/api/test",
+            "api_method":"GET",
+            "param_type":"body"
+        }
+    ]
+}
