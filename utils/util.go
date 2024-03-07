@@ -32,13 +32,17 @@ func ETHVerifySig(from string, sig []byte, msg []byte) bool {
 
 func DIDToEthAddress(did string) (string, error) {
 	arr := strings.Split(did, ":")
-	if len(arr) != 2 {
+	if len(arr) != 3 {
 		return "", fmt.Errorf("not a valid did")
 	}
-	if strings.EqualFold(arr[1], "etho") {
+	if !strings.EqualFold(arr[1], "etho") {
 		return "", fmt.Errorf("not a etho did")
 	}
 	return "0x" + arr[2], nil
+}
+
+func EthAddressToDID(addr string) string {
+	return fmt.Sprintf("did:etho:%s", strings.ReplaceAll(addr, "0x", ""))
 }
 
 func EncryptMessageWithPubkey(msg []byte, pubkey []byte) ([]byte, error) {

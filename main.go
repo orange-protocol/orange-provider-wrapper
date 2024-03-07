@@ -40,6 +40,7 @@ func setupAPP() *cli.App {
 		cmd.RpcUrlFlag,
 		cmd.PortFlag,
 		cmd.ConfigFileFlag,
+		cmd.OperationFlag,
 	}
 	app.Before = func(context *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -54,6 +55,38 @@ func startAgent(ctx *cli.Context) {
 		port = defaultPort
 	}
 
+	initLog(ctx)
+	cfgfile := ctx.GlobalString(cmd.GetFlagName(cmd.ConfigFileFlag))
+	err := config.LoadConfig(cfgfile)
+	if err != nil {
+		fmt.Println("error on load config")
+		panic(err)
+	}
+
+	op := ctx.GlobalString(cmd.GetFlagName(cmd.OperationFlag))
+	if len(op) > 0 {
+		switch strings.ToLower(op) {
+		case "new-wallet":
+			err = service.NewWallet()
+			if err != nil {
+				fmt.Printf("create new wallet failed: %v", err)
+			}
+		case "register-did":
+			err = service.RegisterDID()
+			if err != nil {
+				fmt.Printf("register did failed: %v", err)
+			}
+		default:
+			fmt.Println("invalid operation")
+		}
+		os.Exit(1)
+
+	}
+	err = service.InitAllServices()
+	if err != nil {
+		panic(err)
+	}
+	go CheckLogSize(ctx)
 	router := chi.NewRouter()
 	// Basic CORS
 	// for more ideas, see: https://developer.github.com/v3/#cross-origin-resource-sharing
@@ -69,18 +102,7 @@ func startAgent(ctx *cli.Context) {
 		MaxAge:           172800, // Maximum value not ignored by any of major browsers
 		// Debug:true,
 	}))
-	initLog(ctx)
-	cfgfile := ctx.GlobalString(cmd.GetFlagName(cmd.ConfigFileFlag))
-	err := config.LoadConfig(cfgfile)
-	if err != nil {
-		fmt.Println("error on load config")
-		panic(err)
-	}
-	err = service.InitAllServices()
-	if err != nil {
-		panic(err)
-	}
-	go CheckLogSize(ctx)
+
 	router.Route("/", func(r chi.Router) {
 		r.Use(cors.Handler(cors.Options{
 			// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
@@ -96,9 +118,20 @@ func startAgent(ctx *cli.Context) {
 		}))
 		for _, cfg := range config.GlobalConfig.APIConfigs {
 			if strings.EqualFold(cfg.ApiMethod, "GET") {
-				r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateHandleFunc(cfg))
+				if strings.EqualFold(cfg.ProviderType, "DP") {
+					r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
+				} else {
+					//todo this should always be POST
+					// r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+					log.Errorf("AP should be POST :%v", cfg)
+				}
 			} else { // Default POST
-				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateHandleFunc(cfg))
+				if strings.EqualFold(cfg.ProviderType, "DP") {
+					fmt.Printf("register %s path: %v\n", "POST", cfg.ServerPath)
+					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
+				} else {
+					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+				}
 			}
 		}
 

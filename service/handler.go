@@ -39,8 +39,9 @@ type HttpError struct {
 type ErrorCode string
 
 type ResponseDataWithSig struct {
-	Data string `json:"data"`
-	Sig  string `json:"sig"`
+	Data        string `json:"data"`
+	ProviderDid string `json:"provider_did"`
+	Sig         string `json:"sig"`
 }
 
 type ResponseData struct {
@@ -92,7 +93,7 @@ func (sp *ProxyService) VerifyRequestSignature(requestData string, sig string) (
 	return utils.ETHVerifySig(orangeAddr, sigbytes, []byte(requestData)), nil
 }
 
-func (sp *ProxyService) GetParamFromRequest(r *http.Request) (*OrangeRequest, error) {
+func (sp *ProxyService) GetDPParamFromRequest(r *http.Request) (*OrangeRequest, error) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return nil, err
@@ -105,28 +106,45 @@ func (sp *ProxyService) GetParamFromRequest(r *http.Request) (*OrangeRequest, er
 	return &param, nil
 }
 
-func (sp *ProxyService) GenerateHandleFunc(cfg config.APIConfig) http.HandlerFunc {
+func (sp *ProxyService) GetAPParamFromRequest(r *http.Request) (*ResponseData, error) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	param := ResponseData{}
+	err = json.Unmarshal(body, &param)
+	if err != nil {
+		return nil, err
+	}
+	return &param, nil
+}
+
+func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Infof("Generating handle:%s...", cfg.ServerPath)
-		param, err := sp.GetParamFromRequest(r)
+		// log.Infof("Generating handle:%s...", cfg.ServerPath)
+		param, err := sp.GetDPParamFromRequest(r)
 		if err != nil {
 			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 			return
 		}
 		//check sig
-		valid, err := sp.VerifyRequestSignature(param.Request.RequestData, param.Sig)
-		if !valid || err != nil {
-			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
-			return
+		if cfg.VerifyRequest {
+			valid, err := sp.VerifyRequestSignature(param.Request.RequestData, param.Sig)
+			if !valid || err != nil {
+				doResponse(w, NewHttpError(INVALID_PARAM, "invalid signature"), nil)
+				return
+			}
 		}
-
 		var req *http.Request
 		switch strings.ToUpper(cfg.ParamType) {
 		case "BODY":
+			fmt.Printf("requestData: %v\n", param.Request.RequestData)
 			payload := strings.NewReader(param.Request.RequestData)
+			fmt.Printf("apimethod:%s,url:%s\n", cfg.ApiMethod, cfg.ApiUrl)
 			req, err = http.NewRequest(cfg.ApiMethod, cfg.ApiUrl, payload)
 		case "URL":
-			url := fmt.Sprintf("%s/%s", cfg.ApiUrl, param.Request.RequestData)
+			url := fmt.Sprintf("%s?%s", cfg.ApiUrl, param.Request.RequestData)
+			log.Debugf("URL :%s\n", url)
 			req, err = http.NewRequest(cfg.ApiMethod, url, nil)
 		default:
 			log.Errorf("unsupported paramType: %v", cfg.ParamType)
@@ -143,6 +161,10 @@ func (sp *ProxyService) GenerateHandleFunc(cfg config.APIConfig) http.HandlerFun
 			}
 			//todo other place to store apikey ???
 		}
+		if strings.EqualFold(cfg.ParamType, "BODY") {
+			req.Header.Add("Content-Type", "application/json")
+		}
+
 		res, err := sp.client.Do(req)
 		if err != nil {
 			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
@@ -156,7 +178,11 @@ func (sp *ProxyService) GenerateHandleFunc(cfg config.APIConfig) http.HandlerFun
 
 		data, err := io.ReadAll(res.Body)
 		if err != nil {
-			doResponse(w, NewHttpError(INTERNAL_ERROR, fmt.Sprintf("status code:%d", res.StatusCode)), nil)
+			doResponse(w, NewHttpError(INTERNAL_ERROR, fmt.Sprintf("error:%s", err.Error())), nil)
+			return
+		}
+		if sp.checkResponseFailed(data, cfg.FailedKeywords) {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, fmt.Sprintf("api returns fail:%s", data)), nil)
 			return
 		}
 
@@ -167,8 +193,9 @@ func (sp *ProxyService) GenerateHandleFunc(cfg config.APIConfig) http.HandlerFun
 		}
 
 		dataWithSig := &ResponseDataWithSig{
-			Data: string(data),
-			Sig:  hexutil.Encode(sig),
+			Data:        string(data),
+			ProviderDid: utils.EthAddressToDID(GlobalSignerService.WalletAddress),
+			Sig:         hexutil.Encode(sig),
 		}
 
 		if param.Request.Encrypt {
@@ -210,4 +237,117 @@ func (sp *ProxyService) GenerateHandleFunc(cfg config.APIConfig) http.HandlerFun
 			return
 		}
 	}
+}
+
+func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		param, err := sp.GetAPParamFromRequest(r)
+		if err != nil {
+			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
+			return
+		}
+		var dataWithSig *ResponseDataWithSig
+		if len(param.Encrypted) > 0 {
+			//decrypt param
+			data, err := hexutil.Decode(param.Encrypted)
+			if err != nil {
+				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
+				return
+			}
+			decryptedData, err := utils.DecryptMessage(data, GlobalSignerService.GetPrivateKey())
+			if err != nil {
+				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
+				return
+			}
+			dataWithSig = &ResponseDataWithSig{}
+			err = json.Unmarshal(decryptedData, dataWithSig)
+			if err != nil {
+				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
+				return
+			}
+		} else {
+			dataWithSig = param.Data
+		}
+
+		//verify signature
+		if cfg.VerifyRequest {
+			verified, err := sp.checkDataWithSig(dataWithSig)
+			if err != nil {
+				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
+				return
+			}
+			if !verified {
+				doResponse(w, NewHttpError(INVALID_PARAM, "signature invalid"), nil)
+				return
+			}
+		}
+
+		// send request
+		payload := strings.NewReader(dataWithSig.Data)
+		//for AP, only POST allowed
+		req, err := http.NewRequest("POST", cfg.ApiUrl, payload)
+		if err != nil {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
+			return
+		}
+		if cfg.HasApiKey {
+			if strings.EqualFold(cfg.ApiKeyLocation, "HEADER") {
+				req.Header.Set(cfg.ApiKeyName, cfg.ApiKey)
+			}
+			//todo other place to store apikey ???
+		}
+		res, err := sp.client.Do(req)
+		if err != nil {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
+			return
+		}
+		defer res.Body.Close()
+		if res.StatusCode != 200 {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, fmt.Sprintf("status code:%d", res.StatusCode)), nil)
+			return
+		}
+		data, err := io.ReadAll(res.Body)
+		if err != nil {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
+			return
+		}
+		if sp.checkResponseFailed(data, cfg.FailedKeywords) {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, fmt.Sprintf("api returns fail:%s", data)), nil)
+			return
+		}
+		sig, err := GlobalSignerService.SignMsg(data)
+		if err != nil {
+			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
+			return
+		}
+		resp := &ResponseDataWithSig{
+			Data:        string(data),
+			ProviderDid: utils.EthAddressToDID(GlobalSignerService.WalletAddress),
+			Sig:         hexutil.Encode(sig),
+		}
+		doResponse(w, nil, resp)
+		return
+	}
+}
+
+func (sp *ProxyService) checkDataWithSig(dws *ResponseDataWithSig) (bool, error) {
+	sigbytes, err := hexutil.Decode(dws.Sig)
+	if err != nil {
+		return false, err
+	}
+	signer, err := utils.DIDToEthAddress(dws.ProviderDid)
+	if err != nil {
+		return false, err
+	}
+
+	return utils.ETHVerifySig(signer, sigbytes, []byte(dws.Data)), nil
+}
+
+func (sp *ProxyService) checkResponseFailed(resp []byte, keywords []string) bool {
+	for _, keyword := range keywords {
+		if strings.Contains(string(resp), keyword) {
+			return true
+		}
+	}
+	return false
 }

@@ -6,6 +6,7 @@ require (
 	github.com/ethereum/go-ethereum v1.13.14
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/cors v1.2.1
+	github.com/test-go/testify v1.1.4
 	github.com/urfave/cli v1.22.5
 )
 
@@ -18,6 +19,7 @@ require (
 	github.com/consensys/gnark-crypto v0.12.1 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.2 // indirect
 	github.com/crate-crypto/go-kzg-4844 v0.7.0 // indirect
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deckarep/golang-set/v2 v2.1.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.2.0 // indirect
 	github.com/ethereum/c-kzg-4844 v0.4.0 // indirect
@@ -27,6 +29,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/holiman/uint256 v1.2.4 // indirect
 	github.com/mmcloughlin/addchain v0.4.0 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/supranational/blst v0.3.11 // indirect

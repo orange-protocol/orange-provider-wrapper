@@ -2,8 +2,10 @@ package service
 
 import (
 	"orange-provider-wrapper/orangeDid"
+	"orange-provider-wrapper/utils"
 
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -31,5 +33,10 @@ func InitDidService(rpc string, contractAddress string) error {
 }
 
 func (d *DidService) GetDidPublicKey(did string) (string, error) {
-	return d.orangeDid.GetDIDPublick(nil, did)
+	addr, err := utils.DIDToEthAddress(did)
+	if err != nil {
+		return "", err
+	}
+	btes, err := d.orangeDid.GetDIDPublick(nil, common.HexToAddress(addr))
+	return hexutil.Encode(btes), err
 }

@@ -1,16 +1,21 @@
 package service
 
 import (
+	"crypto/ecdsa"
 	"fmt"
+	"orange-provider-wrapper/config"
 	"orange-provider-wrapper/log"
+	"os"
 
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type SignerService struct {
-	ks  *keystore.KeyStore
-	pwd string
+	ks            *keystore.KeyStore
+	pwd           string
+	privateKey    *ecdsa.PrivateKey
+	WalletAddress string
 }
 
 var GlobalSignerService *SignerService
@@ -28,7 +33,44 @@ func InitSignerService(walletFile, walletPwd string) error {
 	}
 	log.Infof("server are using accounts: [ %s ]", str)
 
-	GlobalSignerService = &SignerService{ks: capitalKeyStore, pwd: walletPwd}
+	//get private key
+	folderPath := walletFile
+	fileInfos, err := os.ReadDir(folderPath)
+	if err != nil {
+		log.Error("initSigAccount ReadDir failed", "err", err.Error())
+		return err
+	}
+
+	if len(fileInfos) == 0 {
+		log.Error("initSigAccount ReadDir failed", "err", "no files under the "+folderPath)
+		return err
+	}
+
+	jsonFileName := ""
+	for _, f := range fileInfos {
+		if !f.IsDir() {
+			jsonFileName = f.Name()
+			break
+		}
+	}
+
+	if jsonFileName == "" {
+		log.Error("initSigAccount ReadDir failed", "err", "no files under the "+folderPath)
+		return err
+	}
+
+	keystoreJSON, err := os.ReadFile(folderPath + "/" + jsonFileName)
+	if err != nil {
+		log.Error("initSigAccount ReadFile failed", "err", err.Error())
+		return err
+	}
+	key, err := keystore.DecryptKey(keystoreJSON, config.GlobalConfig.WalletPwd)
+	if err != nil {
+		log.Error("initSigAccount DecryptKey failed", "err", err.Error())
+		return err
+	}
+
+	GlobalSignerService = &SignerService{ks: capitalKeyStore, pwd: walletPwd, privateKey: key.PrivateKey, WalletAddress: acctArr[0].Address.Hex()}
 	return nil
 }
 
@@ -45,4 +87,8 @@ func (ss *SignerService) SignMsg(msgBytes []byte) ([]byte, error) {
 	sig[64] += 27
 
 	return sig, nil
+}
+
+func (ss *SignerService) GetPrivateKey() *ecdsa.PrivateKey {
+	return ss.privateKey
 }

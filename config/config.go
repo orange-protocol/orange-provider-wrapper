@@ -15,22 +15,26 @@ var GlobalConfig *SysConfig
 
 type SysConfig struct {
 	OrangeDID       string      `json:"orange_did"`
-	WalletFile      string      `json:"wallet_file"`
+	Keystore        string      `json:"keystore"`
 	WalletPwd       string      `json:"wallet_pwd"`
-	Chain           string      `json:"chain"`
+	ChainRpc        string      `json:"chain_rpc"`
+	ChainId         int64       `json:"chain_id"`
 	ContractAddress string      `json:"contract_address"`
 	APIConfigs      []APIConfig `json:"api_configs"`
 }
 
 type APIConfig struct {
-	ServerPath     string `json:"server_path"`
-	HasApiKey      bool   `json:"has_api_key"`
-	ApiKeyLocation string `json:"api_key_location"`
-	ApiKeyName     string `json:"api_key_name"`
-	ApiKey         string `json:"api_key"`
-	ApiUrl         string `json:"api_url"`
-	ApiMethod      string `json:"api_method"`
-	ParamType      string `json:"param_type"`
+	ProviderType   string   `json:"provider_type"`
+	VerifyRequest  bool     `json:"verify_request"`
+	ServerPath     string   `json:"server_path"`
+	HasApiKey      bool     `json:"has_api_key"`
+	ApiKeyLocation string   `json:"api_key_location"`
+	ApiKeyName     string   `json:"api_key_name"`
+	ApiKey         string   `json:"api_key"`
+	ApiUrl         string   `json:"api_url"`
+	ApiMethod      string   `json:"api_method"`
+	ParamType      string   `json:"param_type"`
+	FailedKeywords []string `json:"failed_keywords"`
 }
 
 func LoadConfig(filepath string) error {

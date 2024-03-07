@@ -1,19 +1,48 @@
 {
     "orange_did":"",
-    "wallet_file":"",
-    "wallet_pwd":"",
-    "chain_rpc":"",
-    "contract_address":"",
+    "keystore":"./keystore",
+    "wallet_pwd":"123456",
+    "chain_id":80001,
+    "chain_rpc":"https://rpc-mumbai.maticvigil.com",
+    "contract_address":"0x5E777f913d73Bb9BD07e370168e13d9E6bE6Cd3C",
     "api_configs":[
         {
-            "server_path":"/getlist",
+            "provider_type":"dp",
+            "verify_request":false,
+            "server_path":"/polygonBalance",
+            "has_api_key":false,
+            "api_key_location":"header",
+            "api_key_name":"Authorization",
+            "api_key":"test",
+            "api_url":"https://api-testnet.polygonscan.com/api",
+            "api_method":"GET",
+            "param_type":"url",
+            "failed_keywords":["NOTOK"]
+        },
+        {
+            "provider_type":"dp",
+            "verify_request":false,
+            "server_path":"/ramio",
+            "has_api_key":false,
+            "api_key_location":"header",
+            "api_key_name":"Authorization",
+            "api_key":"test",
+            "api_url":"https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/sbtidentityverifier-polygon",
+            "api_method":"POST",
+            "param_type":"body",
+            "failed_keywords":["NOTOK"]
+        },{
+            "provider_type":"ap",
+            "verify_request":true,
+            "server_path":"/submit",
             "has_api_key":true,
             "api_key_location":"header",
             "api_key_name":"Authorization",
             "api_key":"test",
             "api_url":"http://localhost:8080/api/test",
-            "api_method":"GET",
-            "param_type":"body"
+            "api_method":"POST",
+            "param_type":"body",
+            "failed_keywords":["ERROR"]
         }
     ]
 }

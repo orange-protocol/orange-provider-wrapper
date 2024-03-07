@@ -42,6 +42,10 @@ var (
 		Usage: "config file",
 		Value: "./config.json",
 	}
+	OperationFlag = cli.StringFlag{
+		Name:  "operation",
+		Usage: "new-wallet | register-did",
+	}
 )
 
 // GetFlagName deal with short flag, and return the flag name whether flag name have short name

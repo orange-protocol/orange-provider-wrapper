@@ -7,12 +7,12 @@ import (
 
 func InitAllServices() error {
 	InitProxyService()
-	err := InitDidService(config.GlobalConfig.Chain, config.GlobalConfig.ContractAddress)
+	err := InitDidService(config.GlobalConfig.ChainRpc, config.GlobalConfig.ContractAddress)
 	if err != nil {
 		log.Errorf("InitDidService failed: %v", err)
 		return err
 	}
-	err = InitSignerService(config.GlobalConfig.WalletFile, config.GlobalConfig.WalletPwd)
+	err = InitSignerService(config.GlobalConfig.Keystore, config.GlobalConfig.WalletPwd)
 	if err != nil {
 		log.Errorf("InitSignerService failed: %v", err)
 		return err
