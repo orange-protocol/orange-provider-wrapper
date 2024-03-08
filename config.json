@@ -9,40 +9,40 @@
         {
             "provider_type":"dp",
             "verify_request":false,
-            "server_path":"/polygonBalance",
-            "has_api_key":false,
+            "server_path":"/balance1",
+            "has_api_key":true,
             "api_key_location":"header",
-            "api_key_name":"Authorization",
+            "api_key_name":"x-api-key",
             "api_key":"test",
-            "api_url":"https://api-testnet.polygonscan.com/api",
+            "api_url":"http://localhost:8088/sampleGetUrlDP",
             "api_method":"GET",
             "param_type":"url",
-            "failed_keywords":["NOTOK"]
+            "failed_keywords":[]
         },
         {
             "provider_type":"dp",
             "verify_request":false,
-            "server_path":"/ramio",
-            "has_api_key":false,
+            "server_path":"/balance2",
+            "has_api_key":true,
             "api_key_location":"header",
-            "api_key_name":"Authorization",
+            "api_key_name":"x-api-key",
             "api_key":"test",
-            "api_url":"https://api.thegraph.com/subgraphs/name/volodymyrzolotukhin/sbtidentityverifier-polygon",
+            "api_url":"http://localhost:8088/sampleGetBodyDP",
             "api_method":"POST",
             "param_type":"body",
-            "failed_keywords":["NOTOK"]
+            "failed_keywords":[]
         },{
             "provider_type":"ap",
             "verify_request":true,
-            "server_path":"/submit",
+            "server_path":"/score",
             "has_api_key":true,
             "api_key_location":"header",
-            "api_key_name":"Authorization",
+            "api_key_name":"x-api-key",
             "api_key":"test",
-            "api_url":"http://localhost:8080/api/test",
+            "api_url":"http://localhost:8088/sampleAP",
             "api_method":"POST",
             "param_type":"body",
-            "failed_keywords":["ERROR"]
+            "failed_keywords":[]
         }
     ]
 }

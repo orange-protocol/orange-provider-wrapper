@@ -30,7 +30,7 @@ type OrangeRequest struct {
 
 type HttpResult struct {
 	Result any        `json:"result"`
-	Error  *HttpError `json:"error"`
+	Error  *HttpError `json:"error,omitempty"`
 }
 type HttpError struct {
 	Code    string `json:"code"`
