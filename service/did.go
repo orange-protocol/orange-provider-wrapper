@@ -1,34 +1,31 @@
 package service
 
 import (
-	"orange-provider-wrapper/orangeDid"
+	orangeDID "orange-provider-wrapper/orangeDid"
 	"orange-provider-wrapper/utils"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/laizy/web3"
+	"github.com/laizy/web3/jsonrpc"
 )
 
 type DidService struct {
-	client *ethclient.Client
+	client *jsonrpc.Client
 	// rpc             string
 	// contractAddress string
-	orangeDid *orangeDid.OrangeDID
+	orangeDid *orangeDID.OrangePubkeysManager
 }
 
 var GlobalDidService *DidService
 
 func InitDidService(rpc string, contractAddress string) error {
-	eclient, err := ethclient.Dial(rpc)
+	client, err := jsonrpc.NewClient(rpc)
 	if err != nil {
 		return err
 	}
-	od, err := orangeDid.NewOrangeDID(common.HexToAddress(contractAddress), eclient)
-	if err != nil {
-		return err
-	}
+	od := orangeDID.NewOrangePubkeysManager(web3.HexToAddress(contractAddress), client)
 
-	GlobalDidService = &DidService{client: eclient, orangeDid: od}
+	GlobalDidService = &DidService{client: client, orangeDid: od}
 	return nil
 }
 
@@ -37,6 +34,6 @@ func (d *DidService) GetDidPublicKey(did string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	btes, err := d.orangeDid.GetDIDPublick(nil, common.HexToAddress(addr))
+	btes, err := d.orangeDid.GetDIDPublick(web3.HexToAddress(addr))
 	return hexutil.Encode(btes), err
 }

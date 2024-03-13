@@ -1,0 +1,36 @@
+{
+  "definitions": {
+    "OwnershipTransferredEvent": {
+      "Name": "OwnershipTransferredEvent",
+      "Fields": [
+        {
+          "Name": "previousOwner",
+          "Type": "web3.Address"
+        },
+        {
+          "Name": "newOwner",
+          "Type": "web3.Address"
+        }
+      ],
+      "IsEvent": true,
+      "EventID": "OwnershipTransferred(address,address)",
+      "EventName": "OwnershipTransferredEventID"
+    },
+    "RegisterPubkeyEvent": {
+      "Name": "RegisterPubkeyEvent",
+      "Fields": [
+        {
+          "Name": "arg0",
+          "Type": "web3.Address"
+        },
+        {
+          "Name": "arg1",
+          "Type": "[]byte"
+        }
+      ],
+      "IsEvent": true,
+      "EventID": "registerPubkey(address,bytes)",
+      "EventName": "RegisterPubkeyEventID"
+    }
+  }
+}

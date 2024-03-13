@@ -1,20 +1,18 @@
 package service
 
 import (
-	"context"
 	"fmt"
-	"math/big"
 	"orange-provider-wrapper/config"
 	"orange-provider-wrapper/log"
-	"orange-provider-wrapper/orangeDid"
+	orangeDID "orange-provider-wrapper/orangeDid"
 	"os"
 
-	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/laizy/web3"
+	"github.com/laizy/web3/contract"
+	"github.com/laizy/web3/jsonrpc"
 )
 
 func NewWallet() error {
@@ -84,46 +82,32 @@ func RegisterDID() error {
 	}
 	fmt.Printf("wallet address: %v\n:", key.Address.Hex())
 
-	client, err := ethclient.Dial(config.GlobalConfig.ChainRpc)
+	client, err := jsonrpc.NewClient(config.GlobalConfig.ChainRpc)
 	if err != nil {
 		return err
 	}
 
-	didContract, err := orangeDid.NewOrangeDID(common.HexToAddress(config.GlobalConfig.ContractAddress), client)
+	didContract := orangeDID.NewOrangePubkeysManager(web3.HexToAddress(config.GlobalConfig.ContractAddress), client)
 	if err != nil {
 		return err
 	}
+	didContract.Contract().SetFrom(web3.Address(key.Address))
 
-	pubkey, err := didContract.GetDIDPublick(nil, common.HexToAddress("0x3F3407b63cF82f781B45274f71620357629eB24a"))
+	pubkey, err := didContract.GetDIDPublick(web3.BytesToAddress(key.Address[:]))
 	if err != nil {
 		log.Errorf("GetDIDPublick failed: %v", err)
 		return err
 	}
 	fmt.Printf("pubkey: %v\n", hexutil.Encode(pubkey))
 
-	auth, err := bind.NewKeyedTransactorWithChainID(key.PrivateKey, big.NewInt(config.GlobalConfig.ChainId))
-	if err != nil {
-		return err
-	}
-	nonce, err := client.PendingNonceAt(context.Background(), key.Address)
-	if err != nil {
-		log.Fatal(err)
-	}
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.GasLimit = 300000
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("gas price:%d\n", gasPrice)
-	auth.GasPrice = gasPrice
+	privkey := hexutil.Encode(crypto.FromECDSA(key.PrivateKey))
+	signer := contract.NewSigner(privkey, client, uint64(config.GlobalConfig.ChainId))
 
 	pubkeyBytes := crypto.FromECDSAPub(&key.PrivateKey.PublicKey)
 	fmt.Printf("pubkey is %s\n", hexutil.Encode(pubkeyBytes))
-	tx, err := didContract.RegisterDID(auth, pubkeyBytes)
-	if err != nil {
-		return err
-	}
-	fmt.Printf("txhash is %s\n", tx.Hash().Hex())
+
+	signer.Submit = true
+	receipt := didContract.RegisterDID(pubkeyBytes).Sign(signer).SendTransaction(signer)
+	fmt.Printf("txhash:%s\n", receipt.TransactionHash.String())
 	return nil
 }

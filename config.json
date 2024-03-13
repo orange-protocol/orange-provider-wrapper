@@ -2,9 +2,9 @@
     "orange_did":"",
     "keystore":"./keystore",
     "wallet_pwd":"123456",
-    "chain_id":80001,
-    "chain_rpc":"https://rpc-mumbai.maticvigil.com",
-    "contract_address":"0x5E777f913d73Bb9BD07e370168e13d9E6bE6Cd3C",
+    "chain_id":5851,
+    "chain_rpc":"http://polaris1.ont.io:20339",
+    "contract_address":"0xed371215358cea76F2B0aA0dAA258670BcB89558",
     "api_configs":[
         {
             "provider_type":"dp",
