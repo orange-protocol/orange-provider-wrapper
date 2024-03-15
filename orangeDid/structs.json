@@ -1,5 +1,17 @@
 {
   "definitions": {
+    "InitializedEvent": {
+      "Name": "InitializedEvent",
+      "Fields": [
+        {
+          "Name": "version",
+          "Type": "uint64"
+        }
+      ],
+      "IsEvent": true,
+      "EventID": "Initialized(uint64)",
+      "EventName": "InitializedEventID"
+    },
     "OwnershipTransferredEvent": {
       "Name": "OwnershipTransferredEvent",
       "Fields": [
@@ -16,6 +28,30 @@
       "EventID": "OwnershipTransferred(address,address)",
       "EventName": "OwnershipTransferredEventID"
     },
+    "RegisterCredentialEventEvent": {
+      "Name": "RegisterCredentialEventEvent",
+      "Fields": [
+        {
+          "Name": "arg0",
+          "Type": "string"
+        },
+        {
+          "Name": "arg1",
+          "Type": "web3.Address"
+        },
+        {
+          "Name": "arg2",
+          "Type": "*big.Int"
+        },
+        {
+          "Name": "arg3",
+          "Type": "web3.Address"
+        }
+      ],
+      "IsEvent": true,
+      "EventID": "registerCredentialEvent(string,address,uint256,address)",
+      "EventName": "RegisterCredentialEventEventID"
+    },
     "RegisterPubkeyEvent": {
       "Name": "RegisterPubkeyEvent",
       "Fields": [
@@ -31,6 +67,34 @@
       "IsEvent": true,
       "EventID": "registerPubkey(address,bytes)",
       "EventName": "RegisterPubkeyEventID"
+    },
+    "RegisterPubkeyEventEvent": {
+      "Name": "RegisterPubkeyEventEvent",
+      "Fields": [
+        {
+          "Name": "arg0",
+          "Type": "web3.Address"
+        },
+        {
+          "Name": "arg1",
+          "Type": "[]byte"
+        }
+      ],
+      "IsEvent": true,
+      "EventID": "registerPubkeyEvent(address,bytes)",
+      "EventName": "RegisterPubkeyEventEventID"
+    },
+    "RevokeCredentialEventEvent": {
+      "Name": "RevokeCredentialEventEvent",
+      "Fields": [
+        {
+          "Name": "arg0",
+          "Type": "string"
+        }
+      ],
+      "IsEvent": true,
+      "EventID": "revokeCredentialEvent(string)",
+      "EventName": "RevokeCredentialEventEventID"
     }
   }
 }

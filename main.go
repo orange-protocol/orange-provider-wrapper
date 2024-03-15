@@ -117,21 +117,12 @@ func startAgent(ctx *cli.Context) {
 			// Debug:true,
 		}))
 		for _, cfg := range config.GlobalConfig.APIConfigs {
-			if strings.EqualFold(cfg.ApiMethod, "GET") {
-				if strings.EqualFold(cfg.ProviderType, "DP") {
-					r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
-				} else {
-					//todo this should always be POST
-					// r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
-					log.Errorf("AP should be POST :%v", cfg)
-				}
-			} else { // Default POST
-				if strings.EqualFold(cfg.ProviderType, "DP") {
-					fmt.Printf("register %s path: %v\n", "POST", cfg.ServerPath)
-					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
-				} else {
-					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
-				}
+
+			if strings.EqualFold(cfg.ProviderType, "DP") {
+				fmt.Printf("register %s path: %v\n", "POST", cfg.ServerPath)
+				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
+			} else {
+				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
 			}
 		}
 

@@ -35,7 +35,7 @@ var (
 	PortFlag = cli.Uint64Flag{
 		Name:  "server-port",
 		Usage: "server port",
-		Value: 8081,
+		Value: 8082,
 	}
 	ConfigFileFlag = cli.StringFlag{
 		Name:  "config-file",
