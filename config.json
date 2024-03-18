@@ -8,7 +8,7 @@
     "api_configs":[
         {
             "provider_type":"dp",
-            "verify_request":false,
+            "verify_request":true,
             "server_path":"/balance1",
             "has_api_key":true,
             "api_key_location":"header",

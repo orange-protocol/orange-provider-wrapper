@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/rand"
 	"fmt"
+	"orange-provider-wrapper/log"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -23,6 +24,7 @@ func ETHVerifySig(from string, sig []byte, msg []byte) bool {
 	}
 	pubKey, err := crypto.SigToPub(crypto.Keccak256(msg), sig)
 	if err != nil {
+		log.Errorf("SigToPub:%s", err.Error())
 		return false
 	}
 	recoveredAddr := crypto.PubkeyToAddress(*pubKey)

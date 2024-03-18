@@ -82,12 +82,15 @@ func InitProxyService() {
 
 func (sp *ProxyService) VerifyRequestSignature(requestData string, sig string) (bool, error) {
 	//
+	log.Infof("did: %s", config.GlobalConfig.OrangeDID)
 	orangeAddr, err := utils.DIDToEthAddress(config.GlobalConfig.OrangeDID)
 	if err != nil {
+		log.Errorf("DIDToEthAddress :error: %v", err.Error())
 		return false, err
 	}
 	sigbytes, err := hexutil.Decode(sig)
 	if err != nil {
+		log.Errorf("Decode :error: %v", err.Error())
 		return false, err
 	}
 	return utils.ETHVerifySig(orangeAddr, sigbytes, []byte(requestData)), nil
@@ -129,8 +132,14 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		}
 		//check sig
 		if cfg.VerifyRequest {
-			valid, err := sp.VerifyRequestSignature(param.Request.RequestData, param.Sig)
+			msg, err := json.Marshal(param.Request)
+			if err != nil {
+				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
+				return
+			}
+			valid, err := sp.VerifyRequestSignature(string(msg), param.Sig)
 			if !valid || err != nil {
+				log.Errorf("verify DP signature:data:%s,sig:%s", msg, param.Sig)
 				doResponse(w, NewHttpError(INVALID_PARAM, "invalid signature"), nil)
 				return
 			}
@@ -272,11 +281,15 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 		//verify signature
 		if cfg.VerifyRequest {
 			verified, err := sp.checkDataWithSig(dataWithSig)
+			fmt.Printf("verify signature ...")
+
 			if err != nil {
+				log.Errorf("error checking signature")
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			if !verified {
+				log.Errorf("error checking signature")
 				doResponse(w, NewHttpError(INVALID_PARAM, "signature invalid"), nil)
 				return
 			}

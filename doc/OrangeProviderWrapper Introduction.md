@@ -27,7 +27,7 @@ wrapper 的配置文件，一般在项目的根目录下，可以在启动参数
     "api_configs":[
         {
             "provider_type":"dp",
-            "verify_request":false,
+            "verify_request":true,
             "server_path":"/balance1",
             "has_api_key":true,
             "api_key_location":"header",
