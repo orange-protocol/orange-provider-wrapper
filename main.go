@@ -37,7 +37,6 @@ func setupAPP() *cli.App {
 	app.Flags = []cli.Flag{
 		cmd.LogLevelFlag,
 		cmd.LogDirFlag,
-		cmd.RpcUrlFlag,
 		cmd.PortFlag,
 		cmd.ConfigFileFlag,
 		cmd.OperationFlag,
