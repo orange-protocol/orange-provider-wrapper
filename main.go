@@ -125,7 +125,11 @@ func startAgent(ctx *cli.Context) {
 					r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
 				}
 			} else {
-				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+				if cfg.ApiMethod == "POST" {
+					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+				} else {
+					r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+				}
 			}
 		}
 
