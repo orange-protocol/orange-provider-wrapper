@@ -5,6 +5,7 @@ TBA
 
 ## 2. Proxy Provider Introduction
 ![proxy provider](./images/proxy1.png)
+
 Proxy wrapper helps to provide a unified interface for different providers,hiding api keys, embedding request data signature verification and decryption, response data signing and encryption .
 
 ![](./images/proxy2.png)
