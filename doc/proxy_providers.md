@@ -155,7 +155,7 @@ The proxy wrapper will listen the GET /balance1 path and forward requests to dat
 2. Create dataset in Orange
 ![](./images/beProvider3.png)
 
-input the dataset information
+Fill the dataset information
 
 ![](./images/beProvider4.png)
 chose "GET" and input the wrapper url ```http://wrapper_address/balance1```
@@ -175,6 +175,7 @@ Currently Orange supports
 - User Address: the default address of logged in user.
 - Twitter Handle: the Twitter handle of logged in user.(if binded)
 - Discord ID: the Discord ID of logged in user.(if binded)
+- Customer Value: any customer string value. (for example: "etheraum" or "eth")
 
 #### Parameter Schema & Output Schema
 schema of the input parameter and output data, used for match dataset and module.(module's parameter schema should exactly match the dataset's output schema)
