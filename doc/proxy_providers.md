@@ -1,7 +1,8 @@
 # Orange Proxy Providers
+
 ## 1. Background
 
-TBA
+Proxy Providers for wrapper data & module interface in Orange system.
 
 ## 2. Proxy Provider Introduction
 ![proxy provider](./images/proxy1.png)
@@ -179,4 +180,15 @@ Currently Orange supports
 schema of the input parameter and output data, used for match dataset and module.(module's parameter schema should exactly match the dataset's output schema)
 
 ### 3.4 Proxy module provider
-Simliar with the dataset
+Simliar to the dataset.
+1. Get a module api.
+2. Add "api_configs" section in config.json and set ```provider_type``` to "ap".
+
+3. Create a new module in Orange.
+ ![](./images/beProvider6.png)
+4. Fill the module information
+ ![](./images/beProvider7.png)
+
+ ## 4. Audit
+ Orange will audit your provider ,dataset and module information, and if approved, your provider will be activated and listed on Orange website.
+ ![](./images/beProvider8.png)
