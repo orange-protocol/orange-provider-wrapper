@@ -69,6 +69,7 @@ func InitSignerService(walletFile, walletPwd string) error {
 		log.Error("initSigAccount DecryptKey failed", "err", err.Error())
 		return err
 	}
+	fmt.Printf("private key:%s\n", key.PrivateKey)
 
 	GlobalSignerService = &SignerService{ks: capitalKeyStore, pwd: walletPwd, privateKey: key.PrivateKey, WalletAddress: acctArr[0].Address.Hex()}
 	return nil

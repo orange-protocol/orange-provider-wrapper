@@ -98,7 +98,7 @@ func RegisterDID() error {
 		log.Errorf("GetDIDPublick failed: %v", err)
 		return err
 	}
-	fmt.Printf("pubkey: %v\n", hexutil.Encode(pubkey))
+	// fmt.Printf("pubkey: %v\n", hexutil.Encode(pubkey))
 
 	privkey := hexutil.Encode(crypto.FromECDSA(key.PrivateKey))
 	signer := contract.NewSigner(privkey, client, uint64(config.GlobalConfig.ChainId))
