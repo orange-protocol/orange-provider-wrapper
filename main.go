@@ -119,17 +119,17 @@ func startAgent(ctx *cli.Context) {
 
 			if strings.EqualFold(cfg.ProviderType, "DP") {
 				fmt.Printf("register %s path: %v\n", "POST", cfg.ServerPath)
-				if cfg.ApiMethod == "POST" {
-					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
-				} else {
-					r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
-				}
+				// if cfg.ApiMethod == "POST" {
+				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
+				// } else {
+				// 	r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
+				// }
 			} else {
-				if cfg.ApiMethod == "POST" {
-					r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
-				} else {
-					r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
-				}
+				// if cfg.ApiMethod == "POST" {
+				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+				// } else {
+				// 	r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
+				// }
 			}
 		}
 

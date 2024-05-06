@@ -101,6 +101,7 @@ func (sp *ProxyService) GetDPParamFromRequest(r *http.Request) (*OrangeRequest, 
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("GetDPParamFromRequest request:%v\n", string(body))
 	param := OrangeRequest{}
 	err = json.Unmarshal(body, &param)
 	if err != nil {
@@ -127,6 +128,8 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		// log.Infof("Generating handle:%s...", cfg.ServerPath)
 		param, err := sp.GetDPParamFromRequest(r)
 		if err != nil {
+			fmt.Printf("GetDPParamFromRequest Error: %v\n", err)
+
 			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 			return
 		}
@@ -134,12 +137,14 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		if cfg.VerifyRequest {
 			msg, err := json.Marshal(param.Request)
 			if err != nil {
+				fmt.Printf("Marshal Error: %v\n", err)
+
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			valid, err := sp.VerifyRequestSignature(string(msg), param.Sig)
 			if !valid || err != nil {
-				log.Errorf("verify DP signature:data:%s,sig:%s", msg, param.Sig)
+				fmt.Printf("verify DP signature:data:%s,sig:%s", msg, param.Sig)
 				doResponse(w, NewHttpError(INVALID_PARAM, "invalid signature"), nil)
 				return
 			}
@@ -252,6 +257,7 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		param, err := sp.GetAPParamFromRequest(r)
 		if err != nil {
+			fmt.Printf("GetAPParamFromRequest Error: %v\n", err)
 			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 			return
 		}
@@ -260,17 +266,20 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 			//decrypt param
 			data, err := hexutil.Decode(param.Encrypted)
 			if err != nil {
+				fmt.Printf("Decode Error: %v\n", err)
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			decryptedData, err := utils.DecryptMessage(data, GlobalSignerService.GetPrivateKey())
 			if err != nil {
+				fmt.Printf("DecryptMessage Error: %v\n", err)
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			dataWithSig = &ResponseDataWithSig{}
 			err = json.Unmarshal(decryptedData, dataWithSig)
 			if err != nil {
+				fmt.Printf("Unmarshal Error: %v\n", err)
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
