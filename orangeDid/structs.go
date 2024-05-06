@@ -23,15 +23,6 @@ type InitializedEvent struct {
 	Raw *web3.Log
 }
 
-var OwnershipTransferredEventID = crypto.Keccak256Hash([]byte("OwnershipTransferred(address,address)"))
-
-type OwnershipTransferredEvent struct {
-	PreviousOwner web3.Address
-	NewOwner      web3.Address
-
-	Raw *web3.Log
-}
-
 var RegisterCredentialEventEventID = crypto.Keccak256Hash([]byte("registerCredentialEvent(string,address,uint256,address)"))
 
 type RegisterCredentialEventEvent struct {
@@ -39,15 +30,6 @@ type RegisterCredentialEventEvent struct {
 	Arg1 web3.Address
 	Arg2 *big.Int
 	Arg3 web3.Address
-
-	Raw *web3.Log
-}
-
-var RegisterPubkeyEventID = crypto.Keccak256Hash([]byte("registerPubkey(address,bytes)"))
-
-type RegisterPubkeyEvent struct {
-	Arg0 web3.Address
-	Arg1 []byte
 
 	Raw *web3.Log
 }

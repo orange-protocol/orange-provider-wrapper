@@ -43,7 +43,7 @@ func (_a *OrangePubkeysManager) Contract() *contract.Contract {
 // calls
 
 // Credentials calls the credentials method in the solidity contract
-func (_a *OrangePubkeysManager) Credentials(val0 string, block ...web3.BlockNumber) (retval0 web3.Address, retval1 *big.Int, retval2 web3.Address, retval3 bool, err error) {
+func (_a *OrangePubkeysManager) Credentials(val0 string, block ...web3.BlockNumber) (retval0 web3.Address, retval1 *big.Int, retval2 web3.Address, retval3 bool, retval4 [32]byte, err error) {
 	var out map[string]interface{}
 	_ = out // avoid not used compiler error
 
@@ -65,6 +65,9 @@ func (_a *OrangePubkeysManager) Credentials(val0 string, block ...web3.BlockNumb
 	}
 	if err = mapstructure.Decode(out["isValid"], &retval3); err != nil {
 		err = fmt.Errorf("failed to encode output at index 3")
+	}
+	if err = mapstructure.Decode(out["subjectHash"], &retval4); err != nil {
+		err = fmt.Errorf("failed to encode output at index 4")
 	}
 
 	return
@@ -154,13 +157,13 @@ func (_a *OrangePubkeysManager) Initialize(manager web3.Address) *contract.Txn {
 }
 
 // RegisterCredential sends a registerCredential transaction in the solidity contract
-func (_a *OrangePubkeysManager) RegisterCredential(credentialId string, issuer web3.Address, idx *big.Int, sig []byte) *contract.Txn {
-	return _a.c.Txn("registerCredential", credentialId, issuer, idx, sig)
+func (_a *OrangePubkeysManager) RegisterCredential(credentialId string, issuer web3.Address, idx *big.Int, sig []byte, subjectHash [32]byte) *contract.Txn {
+	return _a.c.Txn("registerCredential", credentialId, issuer, idx, sig, subjectHash)
 }
 
 // RegisterCredentialByManager sends a registerCredentialByManager transaction in the solidity contract
-func (_a *OrangePubkeysManager) RegisterCredentialByManager(credentialId string, issuer web3.Address, idx *big.Int, holder web3.Address) *contract.Txn {
-	return _a.c.Txn("registerCredentialByManager", credentialId, issuer, idx, holder)
+func (_a *OrangePubkeysManager) RegisterCredentialByManager(credentialId string, issuer web3.Address, idx *big.Int, holder web3.Address, subjectHash [32]byte) *contract.Txn {
+	return _a.c.Txn("registerCredentialByManager", credentialId, issuer, idx, holder, subjectHash)
 }
 
 // RegisterDID sends a registerDID transaction in the solidity contract
