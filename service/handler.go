@@ -59,7 +59,7 @@ func doResponse(w http.ResponseWriter, herr *HttpError, result any) {
 	resp := ToHttpResult(result, herr)
 	bts, err := json.Marshal(resp)
 	if err != nil {
-		log.Error("GetStatus Marshal", "err", err.Error())
+		log.Errorf("GetStatus Marshal", "err", err.Error())
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
@@ -101,7 +101,6 @@ func (sp *ProxyService) GetDPParamFromRequest(r *http.Request) (*OrangeRequest, 
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("GetDPParamFromRequest request:%v\n", string(body))
 	param := OrangeRequest{}
 	err = json.Unmarshal(body, &param)
 	if err != nil {
@@ -128,7 +127,7 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		// log.Infof("Generating handle:%s...", cfg.ServerPath)
 		param, err := sp.GetDPParamFromRequest(r)
 		if err != nil {
-			fmt.Printf("GetDPParamFromRequest Error: %v\n", err)
+			log.Errorf("GetDPParamFromRequest Error: %v\n", err)
 
 			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 			return
@@ -137,14 +136,14 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		if cfg.VerifyRequest {
 			msg, err := json.Marshal(param.Request)
 			if err != nil {
-				fmt.Printf("Marshal Error: %v\n", err)
+				log.Errorf("Marshal Error: %v\n", err)
 
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			valid, err := sp.VerifyRequestSignature(string(msg), param.Sig)
 			if !valid || err != nil {
-				fmt.Printf("verify DP signature:data:%s,sig:%s", msg, param.Sig)
+				log.Errorf("verify DP signature:data:%s,sig:%s", msg, param.Sig)
 				doResponse(w, NewHttpError(INVALID_PARAM, "invalid signature"), nil)
 				return
 			}
@@ -152,9 +151,7 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		var req *http.Request
 		switch strings.ToUpper(cfg.ParamType) {
 		case "BODY":
-			fmt.Printf("requestData: %v\n", param.Request.RequestData)
 			payload := strings.NewReader(param.Request.RequestData)
-			fmt.Printf("apimethod:%s,url:%s\n", cfg.ApiMethod, cfg.ApiUrl)
 			req, err = http.NewRequest(cfg.ApiMethod, cfg.ApiUrl, payload)
 		case "URL":
 			url := fmt.Sprintf("%s?%s", cfg.ApiUrl, param.Request.RequestData)
@@ -165,6 +162,7 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 			err = fmt.Errorf("unsupported paramType: %v", cfg.ParamType)
 		}
 		if err != nil {
+			log.Errorf("send request error: %v", err)
 			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
 			return
 		}
@@ -257,7 +255,7 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 	return func(w http.ResponseWriter, r *http.Request) {
 		param, err := sp.GetAPParamFromRequest(r)
 		if err != nil {
-			fmt.Printf("GetAPParamFromRequest Error: %v\n", err)
+			log.Errorf("GetAPParamFromRequest Error: %v\n", err)
 			doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 			return
 		}
@@ -266,20 +264,20 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 			//decrypt param
 			data, err := hexutil.Decode(param.Encrypted)
 			if err != nil {
-				fmt.Printf("Decode Error: %v\n", err)
+				log.Errorf("Decode Error: %v\n", err)
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			decryptedData, err := utils.DecryptMessage(data, GlobalSignerService.GetPrivateKey())
 			if err != nil {
-				fmt.Printf("DecryptMessage Error: %v\n", err)
+				log.Errorf("DecryptMessage Error: %v\n", err)
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
 			dataWithSig = &ResponseDataWithSig{}
 			err = json.Unmarshal(decryptedData, dataWithSig)
 			if err != nil {
-				fmt.Printf("Unmarshal Error: %v\n", err)
+				log.Errorf("Unmarshal Error: %v\n", err)
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)
 				return
 			}
@@ -290,7 +288,6 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 		//verify signature
 		if cfg.VerifyRequest {
 			verified, err := sp.checkDataWithSig(dataWithSig)
-			fmt.Printf("verify signature ...")
 
 			if err != nil {
 				log.Errorf("error checking signature")
