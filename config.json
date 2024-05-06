@@ -1,10 +1,10 @@
 {
     "orange_did":"did:etho:1ae43df6f4c5621e2b156162e958c80a67ee4f5f",
-    "keystore":"./keystore2",
+    "keystore":"./keystore",
     "wallet_pwd":"123456",
     "chain_id":5851,
     "chain_rpc":"http://polaris1.ont.io:20339",
-    "contract_address":"0x18d3dB10B18369691c86e7EF99cBd9B290BaD87A",
+    "contract_address":"0xD90165cf1fC79332b3eaecD3C640631430c34d72",
     "api_configs":[
         {
             "provider_type":"dp",
