@@ -34,6 +34,6 @@ func (d *DidService) GetDidPublicKey(did string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	btes, err := d.orangeDid.GetDIDPublick(web3.HexToAddress(addr))
+	btes, err := d.orangeDid.GetDIDPublickey(web3.HexToAddress(addr))
 	return hexutil.Encode(btes), err
 }

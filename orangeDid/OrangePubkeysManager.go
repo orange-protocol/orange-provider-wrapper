@@ -73,12 +73,12 @@ func (_a *OrangePubkeysManager) Credentials(val0 string, block ...web3.BlockNumb
 	return
 }
 
-// GetDIDPublick calls the getDIDPublick method in the solidity contract
-func (_a *OrangePubkeysManager) GetDIDPublick(addr web3.Address, block ...web3.BlockNumber) (retval0 []byte, err error) {
+// GetDIDPublickey calls the getDIDPublickey method in the solidity contract
+func (_a *OrangePubkeysManager) GetDIDPublickey(addr web3.Address, block ...web3.BlockNumber) (retval0 []byte, err error) {
 	var out map[string]interface{}
 	_ = out // avoid not used compiler error
 
-	out, err = _a.c.Call("getDIDPublick", web3.EncodeBlock(block...), addr)
+	out, err = _a.c.Call("getDIDPublickey", web3.EncodeBlock(block...), addr)
 	if err != nil {
 		return
 	}

@@ -2,10 +2,10 @@ package orangeDID
 
 import (
 	"fmt"
+	"net/rpc/jsonrpc"
 	"testing"
 
 	"github.com/laizy/web3"
-	"github.com/laizy/web3/jsonrpc"
 	"github.com/test-go/testify/assert"
 )
 

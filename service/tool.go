@@ -93,7 +93,7 @@ func RegisterDID() error {
 	}
 	didContract.Contract().SetFrom(web3.Address(key.Address))
 
-	pubkey, err := didContract.GetDIDPublick(web3.BytesToAddress(key.Address[:]))
+	pubkey, err := didContract.GetDIDPublickey(web3.BytesToAddress(key.Address[:]))
 	if err != nil {
 		log.Errorf("GetDIDPublick failed: %v", err)
 		return err
