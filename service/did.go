@@ -10,9 +10,7 @@ import (
 )
 
 type DidService struct {
-	client *jsonrpc.Client
-	// rpc             string
-	// contractAddress string
+	client    *jsonrpc.Client
 	orangeDid *orangeDID.OrangePubkeysManager
 }
 

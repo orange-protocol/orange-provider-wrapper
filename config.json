@@ -4,7 +4,7 @@
     "wallet_pwd":"123456",
     "chain_id":5851,
     "chain_rpc":"http://polaris1.ont.io:20339",
-    "contract_address":"0xD90165cf1fC79332b3eaecD3C640631430c34d72",
+    "contract_address":"0x1A2fD763368A81cB2670cc59047E133E3eb811Ad",
     "api_configs":[
         {
             "provider_type":"dp",

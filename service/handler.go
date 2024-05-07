@@ -124,7 +124,6 @@ func (sp *ProxyService) GetAPParamFromRequest(r *http.Request) (*ResponseData, e
 
 func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// log.Infof("Generating handle:%s...", cfg.ServerPath)
 		param, err := sp.GetDPParamFromRequest(r)
 		if err != nil {
 			log.Errorf("GetDPParamFromRequest Error: %v\n", err)
@@ -321,7 +320,7 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 			return
 		}
 		defer res.Body.Close()
-		if res.StatusCode != 200 {
+		if res.StatusCode != http.StatusOK {
 			doResponse(w, NewHttpError(INTERNAL_ERROR, fmt.Sprintf("status code:%d", res.StatusCode)), nil)
 			return
 		}
@@ -345,7 +344,6 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 			Sig:         hexutil.Encode(sig),
 		}
 		doResponse(w, nil, resp)
-		return
 	}
 }
 

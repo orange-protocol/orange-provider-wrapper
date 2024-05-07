@@ -42,7 +42,7 @@ A sample config.json looks like below:
     "keystore":"./keystore",
     "wallet_pwd":"123456",
     "chain_id":5851,
-    "chain_rpc":"http://polaris1.ont.io:20339",
+    "chain_rpc":"http://polaris1.ont.io:20339", //"http://dappnode1.ont.io:20339" for mainnet
     "contract_address":"0x18d3dB10B18369691c86e7EF99cBd9B290BaD87A",
     "api_configs":[
         {
@@ -91,8 +91,8 @@ A sample config.json looks like below:
 - keystore: the keystore directory of the provider, which contains the private key of the provider.
 - wallet_pwd: the password for the wallet stored in the keystore directory.
 - chain_id: the chain id of orange contract deployed.
-- chain_rpc: chain rpc.
-- contract_address: orange contract address.
+- chain_rpc: chain rpc. ```http://dappnode1.ont.io:20339``` for ONT mainnet.
+- contract_address: orange contract address on mainnet ```0x4944C094ea58a1E456AD720f5baD4AfCEB619863```.
 The ```chain_id,chain_rpc and contract_address``` will also be published on Orange website.
 - api_configs: the api configuration of the provider.
 - - provider_type: "ap" for module provider, "dp" for data provider.
