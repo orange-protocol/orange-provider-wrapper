@@ -297,7 +297,6 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 		//verify signature
 		if cfg.VerifyRequest {
 			verified, err := sp.checkDataWithSig(dataWithSig)
-
 			if err != nil {
 				log.Errorf("error checking signature")
 				doResponse(w, NewHttpError(INVALID_PARAM, err.Error()), nil)

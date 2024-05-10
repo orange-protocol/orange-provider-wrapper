@@ -57,22 +57,22 @@
             "param_type":"rest",
             "failed_keywords":[]
 
-        }, {
-            "provider_type":"ap",
-            "verify_request":true,
-            "server_path":"/score",
-            "has_api_key":true,
-            "api_key_location":"header",
-            "api_key_name":"x-api-key",
-            "api_key":"test",
-            "api_url":"http://localhost:8088/sampleAP",
-            "api_method":"POST",
-            "param_type":"body",
-            "failed_keywords":[]
         },{
             "provider_type":"ap",
             "verify_request":true,
             "server_path":"/networthScore",
+            "has_api_key":true,
+            "api_key_location":"header",
+            "api_key_name":"x-api-key",
+            "api_key":"test",
+            "api_url":"http://localhost:8088/networthScore",
+            "api_method":"POST",
+            "param_type":"body",
+            "failed_keywords":[]
+        }, {
+            "provider_type":"ap",
+            "verify_request":true,
+            "server_path":"/score",
             "has_api_key":true,
             "api_key_location":"header",
             "api_key_name":"x-api-key",
