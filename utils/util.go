@@ -3,6 +3,7 @@ package utils
 import (
 	"crypto/ecdsa"
 	"crypto/rand"
+	"encoding/json"
 	"fmt"
 	"orange-provider-wrapper/log"
 	"strings"
@@ -60,4 +61,30 @@ func EncryptMessageWithPubkey(msg []byte, pubkey []byte) ([]byte, error) {
 func DecryptMessage(secret []byte, privateKey *ecdsa.PrivateKey) ([]byte, error) {
 	privkey := ecies.ImportECDSA(privateKey)
 	return privkey.Decrypt(secret, nil, nil)
+}
+
+func GetRestValueFromParam(param string) (string, error) {
+	if strings.Contains(param, "{") { //json case
+		m := make(map[string]any)
+		err := json.Unmarshal([]byte(param), &m)
+		if err != nil {
+			return "", err
+		}
+		s := ""
+		for k, v := range m {
+			s += fmt.Sprintf("%s/%v", k, v)
+		}
+		return s, nil
+
+	} else { //url query case
+		vals := strings.Split(param, "&")
+		s := ""
+		for _, val := range vals {
+			arr := strings.Split(val, "=")
+			if len(arr) == 2 {
+				s += fmt.Sprintf("%s/%s", arr[0], arr[1])
+			}
+		}
+		return s, nil
+	}
 }

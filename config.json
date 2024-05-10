@@ -32,9 +32,47 @@
             "param_type":"body",
             "failed_keywords":[]
         },{
+            "provider_type":"dp",
+            "verify_request":false,
+            "server_path":"/networth",
+            "has_api_key":true,
+            "api_key_location":"header",
+            "api_key_name":"X-API-KEY",
+            "api_key":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjliYmQ2ZjNhLWVkYzktNGFiNy04MjlmLTkzN2IxOGFiN2IwYiIsIm9yZ0lkIjoiMjE3NjYwIiwidXNlcklkIjoiMjE3MzUwIiwidHlwZUlkIjoiZjNiM2Q5OWItOTQ2YS00NGRhLThjZDYtMDM3Y2E5ZDBmZDQ1IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODYyMjQ4MzUsImV4cCI6NDg0MTk4NDgzNX0.HiW_0OT3LqqNwbIIlJYjmRxghgZeC9thCv9pXo9o_mU",
+            "api_url":"https://deep-index.moralis.io/api/v2.2/$PARAM/net-worth?exclude_spam=true&exclude_unverified_contracts=true",
+            "api_method":"GET",
+            "param_type":"rest",
+            "failed_keywords":[]
+
+        },{
+            "provider_type":"dp",
+            "verify_request":false,
+            "server_path":"/walletStats",
+            "has_api_key":true,
+            "api_key_location":"header",
+            "api_key_name":"X-API-KEY",
+            "api_key":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6IjliYmQ2ZjNhLWVkYzktNGFiNy04MjlmLTkzN2IxOGFiN2IwYiIsIm9yZ0lkIjoiMjE3NjYwIiwidXNlcklkIjoiMjE3MzUwIiwidHlwZUlkIjoiZjNiM2Q5OWItOTQ2YS00NGRhLThjZDYtMDM3Y2E5ZDBmZDQ1IiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODYyMjQ4MzUsImV4cCI6NDg0MTk4NDgzNX0.HiW_0OT3LqqNwbIIlJYjmRxghgZeC9thCv9pXo9o_mU",
+            "api_url":"https://deep-index.moralis.io/api/v2.2/$PARAM/stats?chain=eth",
+            "api_method":"GET",
+            "param_type":"rest",
+            "failed_keywords":[]
+
+        }, {
             "provider_type":"ap",
             "verify_request":true,
             "server_path":"/score",
+            "has_api_key":true,
+            "api_key_location":"header",
+            "api_key_name":"x-api-key",
+            "api_key":"test",
+            "api_url":"http://localhost:8088/sampleAP",
+            "api_method":"POST",
+            "param_type":"body",
+            "failed_keywords":[]
+        },{
+            "provider_type":"ap",
+            "verify_request":true,
+            "server_path":"/networthScore",
             "has_api_key":true,
             "api_key_location":"header",
             "api_key_name":"x-api-key",

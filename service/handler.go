@@ -156,6 +156,16 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 			url := fmt.Sprintf("%s?%s", cfg.ApiUrl, param.Request.RequestData)
 			log.Debugf("URL :%s\n", url)
 			req, err = http.NewRequest(cfg.ApiMethod, url, nil)
+		case "REST":
+			if strings.Contains(cfg.ApiUrl, "$PARAM") {
+				p, err := utils.GetRestValueFromParam(param.Request.RequestData)
+				if err == nil {
+					url := strings.ReplaceAll(cfg.ApiUrl, "$PARAM", p)
+					req, err = http.NewRequest(cfg.ApiMethod, url, nil)
+				}
+			} else {
+				req, err = http.NewRequest(cfg.ApiMethod, cfg.ApiUrl, nil)
+			}
 		default:
 			log.Errorf("unsupported paramType: %v", cfg.ParamType)
 			err = fmt.Errorf("unsupported paramType: %v", cfg.ParamType)
