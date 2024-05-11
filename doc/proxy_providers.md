@@ -103,7 +103,17 @@ A sample config.json looks like below:
 - - api_key: the value of the api key.
 - - api_url: the api url.
 - - api_method: the api method, "GET" or "POST".
-- - param_type: the type of the api parameter, "url" or "body".
+- - param_type: the type of the api parameter, "url" , "body" and "rest" .
+    ```
+    for rest api, sometimes you need to add some query parameters to the api url, for example:
+    https://deep-index.moralis.io/api/v2.2/wallets/:address/net-worth?exclude_spam=true&exclude_unverified_contracts=true
+
+    in this case, the api_url should be:
+    https://deep-index.moralis.io/api/v2.2/$PARAM/net-worth?exclude_spam=true&exclude_unverified_contracts=true
+    and the param_type should be "rest".
+
+    in Orange system Dataset management, you should set the param name to "wallets", the wrapper will replace the $PARAM with the "wallets/<actual user address>".
+    ```
 - - failed_keywords: the keywords of the response message which will cause the request to fail.
 
 ### 3.2 Create sign wallet and register did
