@@ -357,6 +357,9 @@ func (sp *ProxyService) GenerateAPHandleFunc(cfg config.APIConfig) http.HandlerF
 }
 
 func (sp *ProxyService) checkDataWithSig(dws *ResponseDataWithSig) (bool, error) {
+	if dws == nil {
+		return false, fmt.Errorf("dataWithSig is nil")
+	}
 	sigbytes, err := hexutil.Decode(dws.Sig)
 	if err != nil {
 		return false, err

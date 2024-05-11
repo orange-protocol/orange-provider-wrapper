@@ -118,18 +118,11 @@ func startAgent(ctx *cli.Context) {
 		for _, cfg := range config.GlobalConfig.APIConfigs {
 
 			if strings.EqualFold(cfg.ProviderType, "DP") {
-				fmt.Printf("register %s path: %v\n", "POST", cfg.ServerPath)
-				// if cfg.ApiMethod == "POST" {
+				fmt.Printf("register DP %s path: %v\n", "POST", cfg.ServerPath)
 				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
-				// } else {
-				// 	r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateDPHandleFunc(cfg))
-				// }
 			} else {
-				// if cfg.ApiMethod == "POST" {
+				fmt.Printf("register AP %s path: %v\n", "POST", cfg.ServerPath)
 				r.Post(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
-				// } else {
-				// 	r.Get(cfg.ServerPath, service.GlobalProxyService.GenerateAPHandleFunc(cfg))
-				// }
 			}
 		}
 
