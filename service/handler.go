@@ -159,10 +159,13 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 		case "REST":
 			if strings.Contains(cfg.ApiUrl, "$PARAM") {
 				p, err := utils.GetRestValueFromParam(param.Request.RequestData)
-				if err == nil {
-					url := strings.ReplaceAll(cfg.ApiUrl, "$PARAM", p)
-					req, err = http.NewRequest(cfg.ApiMethod, url, nil)
+				if err != nil {
+					log.Errorf("GetRestValueFromParam error: %v", err)
+					doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
+					return
 				}
+				url := strings.ReplaceAll(cfg.ApiUrl, "$PARAM", p)
+				req, err = http.NewRequest(cfg.ApiMethod, url, nil)
 			} else {
 				req, err = http.NewRequest(cfg.ApiMethod, cfg.ApiUrl, nil)
 			}
@@ -175,11 +178,11 @@ func (sp *ProxyService) GenerateDPHandleFunc(cfg config.APIConfig) http.HandlerF
 			doResponse(w, NewHttpError(INTERNAL_ERROR, err.Error()), nil)
 			return
 		}
-
 		if cfg.HasApiKey {
 			if strings.EqualFold(cfg.ApiKeyLocation, "HEADER") {
 				req.Header.Set(cfg.ApiKeyName, cfg.ApiKey)
 			}
+
 			//todo other place to store apikey ???
 		}
 		if strings.EqualFold(cfg.ParamType, "BODY") {

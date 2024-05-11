@@ -72,12 +72,12 @@
         },{
             "provider_type":"ap",
             "verify_request":true,
-            "server_path":"/walletStats",
+            "server_path":"/walletStatsScore",
             "has_api_key":true,
             "api_key_location":"header",
             "api_key_name":"x-api-key",
             "api_key":"test",
-            "api_url":"http://localhost:8088/walletStats",
+            "api_url":"http://localhost:8088/walletStatsScore",
             "api_method":"POST",
             "param_type":"body",
             "failed_keywords":[]
